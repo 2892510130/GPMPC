@@ -1,3 +1,14 @@
+# Build Folders
+build
+Build
+
+# Log files
+Log
+log
+
+# Vscode Configs
+.vscode
+
 # Prerequisites
 *.d
 
