@@ -23,6 +23,7 @@ int main() {
 
     Eigen::RowVectorXi indices = Eigen::RowVectorXi::Zero(2);
     indices << 1, 3;
+    // This one does not work with Eigen version 3.3.7
     auto dm_ind = dmu_dx(indices);
     std::cout << "mask:\n" << mask << '\n';
     std::cout << "indices:\n" << indices << '\n';
