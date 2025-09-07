@@ -163,7 +163,7 @@ class SparseGP:
         r_k = Y_new - Phi_k.T @ self.mu            # scalar
 
         # G_k = Phi_k^T S_u Phi_k + sigma^2
-        G_k = Phi_k.T @ self.Su @ Phi_k + self.variance  # scalar
+        G_k = Phi_k.T @ self.Su @ Phi_k + self.variance + 1 - self.lambda_  # scalar
 
         # L_k = S_u Phi_k / G_k
         L_k = self.Su @ Phi_k / G_k                # (M, 1)
@@ -195,7 +195,7 @@ class SparseGP:
         R_b = Y_new - Phi_b @ self.mu            # (B, 1)
 
         # G_b = Phi_b S_u Phi_b^T + sigma^2 I
-        G_b = Phi_b @ self.Su @ Phi_b.T + self.variance * np.eye(len(X_new))  # (B,B)
+        G_b = Phi_b @ self.Su @ Phi_b.T + (self.variance + 1 - self.lambda_) * np.eye(len(X_new))  # (B,B)
 
         # L_b = S_u Phi_b^T G_b^{-1}
         L_b = self.Su @ Phi_b.T @ np.linalg.inv(G_b)  # (M,B)
@@ -285,7 +285,8 @@ def testUpdateSparse(noise_std, X, Y, U):
     gpSparse = SparseGP(
         X, Y, U,
         RBF(input_dim=1, variance=1., lengthscale=1.),
-        variance=noise_std**2
+        variance=noise_std**2,
+        lambda_=1.0
     )
 
     # Prediction grid
