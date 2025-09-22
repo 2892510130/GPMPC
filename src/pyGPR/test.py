@@ -229,7 +229,7 @@ def test_add_data(noise_std, X, Y, U):
 
     # Prediction grid
     xPredict = np.linspace(-15, 25, 200)[:, None]
-    predict_method = "cholesky" # cholesky mu_su
+    predict_method = "mu_su" # cholesky mu_su
 
     # Predict before update
     mu_sparse, var_sparse = gpSparse.predict(xPredict, method=predict_method)   # shapes (200,1)
@@ -249,24 +249,35 @@ def test_add_data(noise_std, X, Y, U):
     )
 
     # New data point
-    newN = 2
-    X_new = np.linspace(10, 20, newN)[:, None]
+    newN = 20
+    X_new = np.linspace(12, 15, newN)[:, None]
     Y_new = 0.5 * np.sin(X_new) + noise_std * np.random.randn(newN, 1)
-    plt.plot(X_new, Y_new, 'cx', label='New Data Point')
+
+    new_inducing_x, new_inducing_y = [], []
 
     # Update GP
     predict_method = "mu_su" # cholesky mu_su
+
+    # add new data
     # gpSparse.add_new_data(X_new, Y_new)
+    # plt.plot(X_new, Y_new, 'cx', label='New Data Point')
+
+    # remove data
     # gpSparse.remove_data(remove_number=10)
+
+    # add new inducing points
     # gpSparse.add_new_inducing(X_new[0].reshape(1, -1))
     for i, (xk, yk) in enumerate(zip(X_new, Y_new)):
-        gpSparse.add_new_inducing(xk.reshape(1, -1))
-        # break
+        if i % 5 == 0:
+            gpSparse.add_new_inducing(xk.reshape(1, -1))
+            new_inducing_x.append(xk)
+            new_inducing_y.append(yk)
+    plt.plot(new_inducing_x, new_inducing_y, 'o', label='New Inducing Point')
 
-    # gpSparse.update_mu_su(from_scratch=True)
+    gpSparse.update_mu_su(from_scratch=True)
     # gpSparse.update_batch(X_new, Y_new)
-    # for xk, yk in zip(X_new, Y_new):
-    #     gpSparse.update(xk, yk)
+    for xk, yk in zip(new_inducing_x, new_inducing_y):
+        gpSparse.update(xk, yk)
     # gpSparse.update_mu_su()
 
     print(gpSparse.mu.T)

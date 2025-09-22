@@ -41,3 +41,6 @@ log
 *.exe
 *.out
 *.app
+
+# python scripts
+__pycache__
